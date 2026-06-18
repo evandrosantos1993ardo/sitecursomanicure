@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treinamento Seguro — Dona Doraci</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --rose:     #C4748A;
+    --rose-dk:  #9E4E64;
+    --rose-lt:  #F5D6DE;
+    --cream:    #FDF8F5;
+    --sand:     #EDE5DC;
+    --charcoal: #2A2320;
+    --muted:    #7A6B65;
+    --wrong:    #B94A4A;
+    --wrong-lt: #F7E0E0;
+    --right:    #4A8C6F;
+    --right-lt: #DCF0E8;
+    --white:    #FFFFFF;
+    --shadow:   0 4px 24px rgba(42,35,32,0.10);
+    --radius:   14px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── Header ── */
+  header {
+    width: 100%;
+    background: var(--rose-dk);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  }
+  header .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--rose-lt);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--white);
+    letter-spacing: 0.02em;
+  }
+  header .badge {
+    margin-left: auto;
+    background: var(--rose-lt);
+    color: var(--rose-dk);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── Progress bar ── */
+  .progress-wrap {
+    width: 100%;
+    background: var(--sand);
+    height: 5px;
+  }
+  .progress-bar {
+    height: 5px;
+    background: var(--rose);
+    transition: width 0.6s ease;
+  }
+
+  /* ── Main container ── */
+  .container {
+    width: 100%;
+    max-width: 780px;
+    padding: 40px 20px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  /* ── Screen ── */
+  .screen { display: none; flex-direction: column; gap: 24px; }
+  .screen.active { display: flex; animation: fadeIn .4s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform:none; } }
+
+  /* ── Card ── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 32px;
+  }
+
+  /* ── Video wrapper ── */
+  .video-wrap {
+    width: 100%;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #1a1a1a;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: var(--shadow);
+  }
+  .video-wrap video,
+  .video-wrap iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+  .video-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: #888;
+    font-size: 0.9rem;
+  }
+  .video-placeholder .play-icon {
+    width: 64px; height: 64px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+
+  /* ── Audio player ── */
+  .audio-block {
+    background: var(--sand);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .audio-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--rose-dk);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .audio-block audio {
+    width: 100%;
+    accent-color: var(--rose-dk);
+  }
+  .audio-text {
+    font-size: 0.88rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  /* ── Question ── */
+  .question-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--charcoal);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  .question-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--rose);
+    margin-bottom: 4px;
+  }
+
+  /* ── Options ── */
+  .options { display: flex; flex-direction: column; gap: 12px; }
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: var(--cream);
+    border: 2px solid var(--sand);
+    border-radius: 10px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: border-color .2s, background .2s, transform .15s;
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    color: var(--charcoal);
+    line-height: 1.5;
+  }
+  .option-btn:hover {
+    border-color: var(--rose);
+    background: var(--rose-lt);
+    transform: translateY(-2px);
+  }
+  .option-btn .opt-letter {
+    min-width: 32px; height: 32px;
+    background: var(--rose-dk);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── Feedback ── */
+  .feedback-card {
+    border-radius: var(--radius);
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .feedback-card.wrong {
+    background: var(--wrong-lt);
+    border-left: 5px solid var(--wrong);
+  }
+  .feedback-card.right {
+    background: var(--right-lt);
+    border-left: 5px solid var(--right);
+  }
+  .feedback-card .feedback-title {
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .feedback-card.wrong .feedback-title { color: var(--wrong); }
+  .feedback-card.right .feedback-title { color: var(--right); }
+
+  /* ── Info box ── */
+  .info-box {
+    background: var(--sand);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--charcoal);
+    border-left: 4px solid var(--rose);
+  }
+  .info-box strong { color: var(--rose-dk); }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+    align-self: flex-start;
+  }
+  .btn-primary {
+    background: var(--rose-dk);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #7d3c50; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(158,78,100,.35); }
+  .btn-secondary {
+    background: var(--sand);
+    color: var(--charcoal);
+    border: 2px solid var(--rose-lt);
+  }
+  .btn-secondary:hover { background: var(--rose-lt); }
+  .btn-wrong {
+    background: var(--wrong);
+    color: #fff;
+  }
+  .btn-wrong:hover { background: #922a2a; }
+
+  /* ── Part divider ── */
+  .part-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .part-header .pill {
+    background: var(--rose-dk);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+  .part-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--charcoal);
+    font-weight: 400;
+  }
+
+  /* ── Congrats ── */
+  .congrats-wrap {
+    text-align: center;
+    padding: 48px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .congrats-icon {
+    width: 80px; height: 80px;
+    background: var(--right-lt);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+  .congrats-wrap h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--right);
+  }
+  .congrats-msg {
+    font-size: 1.05rem;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 480px;
+  }
+
+  /* ── Divider ── */
+  hr { border: none; border-top: 1px solid var(--sand); }
+
+  @media (max-width: 520px) {
+    .card { padding: 20px 16px; }
+    header h1 { font-size: 1rem; }
+    .btn { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-icon">💅</div>
+  <h1>Treinamento Clínico — Manicure Segura</h1>
+  <span class="badge">Simulação</span>
+</header>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+<div class="container">
+
+  <!-- ══════════════════════════════════════════
+       PARTE 1 — TELA 1: Vídeo Dona Doraci + Pergunta
+  ══════════════════════════════════════════ -->
+  <div class="screen active" id="s1">
+    <div class="part-header">
+      <span class="pill">Parte 1</span>
+      <h2>O Caso da Dona Doraci</h2>
+    </div>
+
+    <!-- Vídeo -->
+    <div class="video-wrap" id="videoWrap1">
+      <!-- 
+        INSTRUÇÃO: Substitua o src abaixo pelo caminho do seu vídeo.
+        Ex: <video src="video-doraci-apresentacao.mp4" controls></video>
+        Ou para YouTube: <iframe src="https://www.youtube.com/embed/SEU_ID" frameborder="0" allowfullscreen></iframe>
+      -->
+      <div class="video-placeholder">
+        <div class="play-icon">▶</div>
+        <span>Vídeo — Apresentação da Dona Doraci</span>
+        <small>Substitua pelo seu arquivo de vídeo</small>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="question-label">Pergunta 1 de 3</p>
+      <p class="question-title">
+        Você recebeu a ligação da Dona Doraci. O que você faz?
+      </p>
+    </div>
+
+    <div class="options">
+      <button class="option-btn" onclick="p1escolha('A')">
+        <span class="opt-letter">A</span>
+        <span>Agenda imediatamente o procedimento.</span>
+      </button>
+      <button class="option-btn" onclick="p1escolha('B')">
+        <span class="opt-letter">B</span>
+        <span>Antes de agendar, realiza uma anamnese e pergunta se ela possui algum problema de saúde.</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PARTE 1 — TELA 1A: Resposta ERRADA (A)
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="s1a">
+    <div class="feedback-card wrong">
+      <p class="feedback-title">❌ Resposta Incorreta</p>
+    </div>
+
+    <div class="card">
+      <div class="audio-block">
+        <p class="audio-label">🔊 Ouça o feedback</p>
+        <!--
+          Substitua o src pelo seu arquivo de áudio.
+          Ex: <audio src="audio-errado-p1.mp3" controls></audio>
+        -->
+        <audio controls>
+          <source src="audio-errado-parte1.mp3" type="audio/mpeg">
+          Seu navegador não suporta o player de áudio.
+        </audio>
+        <p class="audio-text">
+          Agendar sem antes realizar uma anamnese pode colocar a saúde da cliente em risco. Sempre avalie o histórico de saúde antes de qualquer procedimento.
+        </p>
+      </div>
+    </div>
+
+    <button class="btn btn-secondary" onclick="irPara('s1')">
+      ↩ Tentar novamente
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PARTE 1 — TELA 1B: Anamnese (resposta B correta)
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="s1b">
+    <div class="feedback-card right">
+      <p class="feedback-title">✅ Boa escolha!</p>
+    </div>
+
+    <div class="card">
+      <div class="audio-block">
+        <p class="audio-label">🔊 Anamnese — Ouça as perguntas</p>
+        <!--
+          Substitua pelo áudio com perguntas de anamnese.
+        -->
+        <audio controls>
+          <source src="audio-anamnese.mp3" type="audio/mpeg">
+          Seu navegador não suporta o player de áudio.
+        </audio>
+        <p class="audio-text">
+          Ao realizar a anamnese, questione sobre diabetes, hipertensão, problemas circulatórios, uso de medicamentos anticoagulantes, alergias e condições de pele.
+        </p>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="irPara('s1c')">
+      Próximo →
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PARTE 1 — TELA 1C: Vídeo Dona Doraci conta seus problemas
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="s1c">
+    <p class="question-label" style="color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;">
+      Após a anamnese, a Dona Doraci conta sua história...
+    </p>
+
+    <div class="video-wrap">
+      <!--
+        Substitua pelo vídeo onde a Dona Doraci conta os problemas de saúde.
+        Ex: <video src="video-doraci-problemas.mp4" controls></video>
+      -->
+      <div class="video-placeholder">
+        <div class="play-icon">▶</div>
+        <span>Vídeo — Dona Doraci conta seus problemas de saúde</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="audio-block">
+        <p class="audio-label">🔊 Orientações após o relato</p>
+        <!--
+          Áudio com orientações após o vídeo.
+        -->
+        <audio controls>
+          <source src="audio-pos-relato.mp3" type="audio/mpeg">
+          Seu navegador não suporta o player de áudio.
+        </audio>
+        <p class="audio-text">
+          Com base no que a Dona Doraci relatou, é fundamental planejar o atendimento com segurança e cuidado redobrado.
+        </p>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="irPara('s1d')">
+      Agendar Consulta 📅
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PARTE 1 — TELA 1D: Agendamento / Áudio de atendimento
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="s1d">
+    <div class="feedback-card right">
+      <p class="feedback-title">📅 Consulta Agendada!</p>
+    </div>
+
+    <div class="card">
+      <div class="audio-block">
+        <p class="audio-label">🔊 Simulação do atendimento telefônico</p>
+        <!--
+          Áudio simulando o atendimento / agendamento.
+        -->
+        <audio controls>
+          <source src="audio-atendimento-agendamento.mp3" type="audio/mpeg">
+          Seu navegador não suporta o player de áudio.
+        </audio>
+        <p class="audio-text">
+          Ouça como deve ser conduzido o agendamento seguro, considerando as informações levantadas na anamnese.
+        </p>
+      </div>
+    </div>
+
+    <hr>
+
+    <button class="btn btn-primary" onclick="irPara('s2'); setProgress(50)">
+      Avançar para a Parte 2 →
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PARTE 2 — TELA 2: Dona Doraci chega ao salão
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="s2">
+    <div class="part-header">
+      <span class="pill">Parte 2</span>
+      <h2>Dona Doraci Chega ao Salão</h2>
+    </div>
+
+    <div class="video-wrap">
+      <!--
+        Substitua pelo vídeo/imagem da Dona Doraci chegando ao salão.
+      -->
+      <div class="video-placeholder">
+        <div class="play-icon">▶</div>
+        <span>Vídeo — Dona Doraci chega ao salão</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="audio-block">
+        <p class="audio-label">🔊 Contexto da chegada</p>
+        <audio controls>
+          <source src="audio-chegada-salao.mp3" type="audio/mpeg">
+          Seu navegador não suporta o player de áudio.
+        </audio>
+        <p class="audio-text">
+          A Dona Doraci chegou ao salão para o procedimento. Observe atentamente as condições dos seus pés antes de iniciar qualquer tratamento.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="question-label">Pergunta 2 de 3</p>
+      <p class="question-title">O que você faz agora?</p>
+    </div>
+
+    <div class="options">
+      <button class="option-btn" onclick="p2escolha('A')">
+        <span class="opt-letter">A</span>
+        <span>Inicia imediatamente a remoção das cutículas e a esfoliação dos pés.</span>
+      </button>
+      <button class="option-btn" onclick="p2escolha('B')">
+        <span class="opt-letter">B</span>
+        <span>Realiza uma avaliação detalhada antes de decidir quais procedimentos são seguros.</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PARTE 2 — TELA 2A: Errado (A) — pula procedimento
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="s2a">
+    <div class="feedback-card wrong">
+      <p class="feedback-title">❌ Resposta Incorreta</p>
+    </div>
+
+    <div class="card">
+      <div class="audio-block">
+        <p class="audio-label">🔊 Ouça o feedback</p>
+        <audio controls>
+          <source src="audio-errado-parte2a.mp3" type="audio/mpeg">
+          Seu navegador não suporta o player de áudio.
+        </audio>
+        <p class="audio-text">
+          Iniciar procedimentos sem avaliação prévia em clientes com condições especiais de saúde é uma falta grave de protocolo. A avaliação detalhada é indispensável para garantir a segurança.
+        </p>
+      </div>
+    </div>
+
+    <button class="btn btn-secondary" onclick="irPara('s2')">
+      ↩ Voltar
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PARTE 2 — TELA 2B: Correto (B) — avaliação detalhada → segunda pergunta
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="s2b">
+    <div class="feedback-card right">
+      <p class="feedback-title">✅ Muito bem!</p>
+    </div>
+
+    <div class="card">
+      <div class="audio-block">
+        <p class="audio-label">🔊 Avaliação dos pés</p>
+        <audio controls>
+          <source src="audio-avaliacao-pes.mp3" type="audio/mpeg">
+          Seu navegador não suporta o player de áudio.
+        </audio>
+        <p class="audio-text">
+          Ao examinar os pés da Dona Doraci, você observa rachaduras, pele ressecada e sinais que exigem cuidado especial para evitar infecções.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="question-label">Pergunta 3 de 3</p>
+      <p class="question-title">O que você faz?</p>
+    </div>
+
+    <div class="options">
+      <button class="option-btn" onclick="p2bEscolha('A')">
+        <span class="opt-letter">A</span>
+        <span>Remove as cutículas e realiza uma esfoliação intensa.</span>
+      </button>
+      <button class="option-btn" onclick="p2bEscolha('B')">
+        <span class="opt-letter">B</span>
+        <span>Não remove as cutículas, evita procedimentos agressivos e orienta a cliente sobre os cuidados adequados.</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PARTE 2 — TELA 2B-A: Errado (A) — remove cutículas
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="s2ba">
+    <div class="feedback-card wrong">
+      <p class="feedback-title">❌ Resposta Incorreta</p>
+    </div>
+
+    <div class="card">
+      <div class="audio-block">
+        <p class="audio-label">🔊 Ouça o feedback</p>
+        <audio controls>
+          <source src="audio-errado-cuticulas.mp3" type="audio/mpeg">
+          Seu navegador não suporta o player de áudio.
+        </audio>
+        <p class="audio-text">
+          Remover cutículas e realizar esfoliação intensa em clientes diabéticas com rachaduras nos pés pode causar ferimentos graves e risco de infecção. Essa conduta é contraindicada.
+        </p>
+      </div>
+    </div>
+
+    <button class="btn btn-secondary" onclick="irPara('s2b')">
+      ↩ Voltar
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PARTE 2 — TELA 2B-B: CORRETO (B) — conduta segura
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="s2bb">
+    <div class="feedback-card right">
+      <p class="feedback-title">✅ Conduta Correta!</p>
+    </div>
+
+    <div class="info-box">
+      <strong>Em clientes com diabetes tipo 1</strong>, especialmente quando apresentam rachaduras nos pés, o profissional deve adotar uma conduta segura.<br><br>
+      🔸 <strong>A remoção de cutículas não é recomendada.</strong> Quando necessário, as cutículas podem apenas ser cuidadosamente empurradas, respeitando os protocolos da instituição.<br><br>
+      🔸 <strong>A esfoliação deve ser avaliada com cautela</strong> e, dependendo das condições da pele, pode até mesmo ser contraindicada.<br><br>
+      🔸 O mais importante é <strong>preservar a integridade da pele</strong> e evitar qualquer lesão que possa resultar em complicações.
+    </div>
+
+    <div class="card">
+      <div class="audio-block">
+        <p class="audio-label">🔊 Conclusão do procedimento</p>
+        <audio controls>
+          <source src="audio-conduta-correta.mp3" type="audio/mpeg">
+          Seu navegador não suporta o player de áudio.
+        </audio>
+        <p class="audio-text">
+          Ouça as orientações finais sobre como conduzir o encerramento do atendimento com segurança e como instruir a Dona Doraci sobre os cuidados em casa.
+        </p>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="irPara('sfim'); setProgress(100)">
+      Finalizar Treinamento ✓
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TELA FINAL — PARABÉNS
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="sfim">
+    <div class="card">
+      <div class="congrats-wrap">
+        <div class="congrats-icon">🏆</div>
+        <h2>Parabéns!</h2>
+        <p class="congrats-msg">
+          Você realizou um atendimento <strong>seguro, ético e focado na saúde da cliente</strong>.
+        </p>
+        <hr style="width:100%;margin:8px 0">
+        <p class="audio-text" style="font-size:.9rem;color:var(--muted);text-align:center;">
+          Lembre-se: o cuidado com clientes especiais exige conhecimento, atenção e protocolo. Você demonstrou todas essas qualidades!
+        </p>
+        <button class="btn btn-primary" onclick="reiniciar()" style="margin-top:12px;">
+          🔄 Refazer o treinamento
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+  function irPara(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) { el.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+  }
+
+  function setProgress(pct) {
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  function p1escolha(op) {
+    if (op === 'A') { irPara('s1a'); }
+    else { irPara('s1b'); setProgress(20); }
+  }
+
+  function p2escolha(op) {
+    if (op === 'A') { irPara('s2a'); }
+    else { irPara('s2b'); setProgress(70); }
+  }
+
+  function p2bEscolha(op) {
+    if (op === 'A') { irPara('s2ba'); }
+    else { irPara('s2bb'); setProgress(90); }
+  }
+
+  function reiniciar() {
+    irPara('s1');
+    setProgress(0);
+  }
+</script>
+</body>
+</html>
